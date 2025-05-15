@@ -5,8 +5,7 @@ import { API_KEY } from "../constants";
 export const generateResponse = async (
   prompt: string,
   attachments: File[],
-  selectedModel: string,
-  webSearchEnabled: boolean
+  selectedModel: string
 ) => {
   try {
     const ai = new GoogleGenAI({ apiKey: API_KEY });
@@ -40,19 +39,13 @@ export const generateResponse = async (
           ]
         }
       ],
-      config: {
-        responseModalities: [Modality.TEXT, Modality.IMAGE],
-        GenerateContentConfig: {
-          maxOutputTokens: 4096,
-          temperature: 0.9
-        }
+     config: {
+        responseModalities: selectedModel.toLowerCase().includes("image")
+          ? [Modality.TEXT, Modality.IMAGE]
+          : [Modality.TEXT],
+        maxOutputTokens: 4096,
+        temperature: 0.9
       },
-      tools: webSearchEnabled ? [{
-        googleSearchRetrieval: {
-          disableAttribution: false,
-          maxSearchResults: 5
-        }
-      }] : undefined
     });
 
     return parseGeminiResponse(response);
