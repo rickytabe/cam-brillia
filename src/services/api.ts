@@ -1,6 +1,6 @@
 import { GoogleGenAI, Modality } from "@google/genai";
 import { API_KEY } from "../constants";
-import type { Message } from "../types";
+//import type { Message } from "../types";
 
 export const generateResponse = async (
   prompt: string,
@@ -30,7 +30,7 @@ export const generateResponse = async (
     }));
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash-preview-image-generation",
+      model: selectedModel,
       contents: [
         { 
           role: "user",
@@ -42,7 +42,7 @@ export const generateResponse = async (
       ],
       config: {
         responseModalities: [Modality.TEXT, Modality.IMAGE],
-        generationConfig: {
+        GenerateContentConfig: {
           maxOutputTokens: 4096,
           temperature: 0.9
         }
