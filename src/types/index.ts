@@ -4,12 +4,19 @@ export type Message = {
   attachments?: File[];
   displayedContent?: string;
   isTyping?: boolean;
+  images? : string[];
 };
 
-export type GeminiResponse = {
+export interface GeminiImageResponse {
   candidates: Array<{
     content: {
-      parts: Array<{ text: string }>;
+      parts: Array<{
+        text?: string;
+        image?: {
+          bytes: string; // Base64-encoded image
+          mimeType: string;
+        };
+      }>;
     };
   }>;
 };

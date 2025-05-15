@@ -4,4 +4,5 @@ export const MODELS = {
   PRO: "gemini-1.5-pro-latest",
   PRO_8B: "gemini-1.5-pro-8b",
   ULTRA: "gemini-1.5-flash-8b",
+  IMAGE_GEN: "gemini-2.0-flash-preview-image-generation",
 };

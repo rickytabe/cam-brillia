@@ -9,7 +9,11 @@ import { Header } from "./components/Header";
 
 export default function App() {
   const [messages, setMessages] = useState<Message[]>([
-    { content: "Hello! How can I help you today?", isUser: false },
+    { 
+      content: "Hello! How can I help you today?", 
+      isUser: false,
+      displayedContent: "Hello! How can I help you today?" 
+    },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -38,12 +42,15 @@ export default function App() {
         if (currentIndex < targetContent.length) {
           setMessages(prev => prev.map((msg, index) => 
             index === prev.length - 1 
-              ? { ...msg, displayedContent: targetContent.slice(0, currentIndex + 1) }
+              ? { 
+                  ...msg, 
+                  displayedContent: targetContent.slice(0, currentIndex + 1),
+                  images: msg.images // Preserve existing images
+                }
               : msg
           ));
           currentIndex++;
-          // Adjust speed by changing the timeout duration (50ms for faster typing)
-          typingTimeout.current = setTimeout(typeNextCharacter, 50);
+          typingTimeout.current = setTimeout(typeNextCharacter, 30);
         } else {
           setIsTyping(false);
         }
@@ -83,7 +90,8 @@ export default function App() {
       setMessages((prev) => [
         ...prev,
         {
-          content: response,
+          content: typeof response === "string" ? response : response.text,
+          images: typeof response === "object" && "images" in response ? response.images : undefined,
           isUser: false,
           displayedContent: "",
         },
@@ -105,7 +113,11 @@ export default function App() {
       <main className="flex-1 overflow-y-auto p-4 mb-10">
         <div className="max-w-4xl mx-auto space-y-4 pb-24">
           {messages.map((message, index) => (
-            <MessageComponent key={index} {...message}  isTyping={index === messages.length - 1 && isTyping} />
+            <MessageComponent 
+              key={index} 
+              {...message} 
+              isTyping={index === messages.length - 1 && isTyping} 
+            />
           ))}
           <div ref={chatEndRef} />
         </div>

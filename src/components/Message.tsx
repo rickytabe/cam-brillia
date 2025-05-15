@@ -5,7 +5,14 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { materialDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import rehypeSanitize from 'rehype-sanitize';
 
-export function MessageComponent({ content, isUser, attachments, displayedContent, isTyping }: Message) {
+export function MessageComponent({ 
+  content, 
+  isUser, 
+  attachments, 
+  displayedContent, 
+  isTyping, 
+  images 
+}: Message & { isTyping?: boolean }) {
   return (
     <div className={`flex gap-4 ${isUser ? "justify-end" : "justify-start"}`}>
       {!isUser && (
@@ -16,7 +23,10 @@ export function MessageComponent({ content, isUser, attachments, displayedConten
         </div>
       )}
 
-      <div className={`max-w-[80%] ${isUser ? "bg-blue-500 p-4 border rounded-xl" : "bg-transparent"}`}>
+      <div className={`p-4 rounded-xl max-w-[80%] ${
+        isUser ? "bg-blue-500" : "bg-gray-700"
+      }`}>
+        {/* Attachments */}
         {attachments?.map((file, index) => (
           <div key={index} className="mb-2 last:mb-0">
             {file.type.startsWith("image/") ? (
@@ -24,7 +34,6 @@ export function MessageComponent({ content, isUser, attachments, displayedConten
                 src={URL.createObjectURL(file)}
                 alt="Attachment"
                 className="max-w-xs rounded-lg"
-                onError={() => console.log("Error loading image")}
               />
             ) : (
               <div className="flex items-center gap-2 text-gray-300">
@@ -37,6 +46,18 @@ export function MessageComponent({ content, isUser, attachments, displayedConten
           </div>
         ))}
 
+        {/* Generated Images */}
+        {images?.map((img, index) => (
+          <div key={`img-${index}`} className="mb-4">
+            <img
+              src={img}
+              alt={`Generated content ${index + 1}`}
+              className="rounded-lg max-w-full"
+            />
+          </div>
+        ))}
+
+        {/* Markdown Content */}
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           rehypePlugins={[rehypeSanitize]}
@@ -52,22 +73,23 @@ export function MessageComponent({ content, isUser, attachments, displayedConten
                   {...props}
                 />
               ) : (
-                <code className={`${className} bg-black px-1.5 py-0.5 rounded`} {...props}>
+                <code className={`${className} bg-gray-800 px-1.5 py-0.5 rounded`} {...props}>
                   {children}
                 </code>
               );
             }
           }}
         >
-          {content}
+          {displayedContent || content}
         </ReactMarkdown>
 
-        {!isUser && displayedContent?.length !== content.length && isTyping && (
-           <div className="typing-indicator ml-2">
-          <div className="dot"></div>
-          <div className="dot"></div>
-          <div className="dot"></div>
-        </div>
+        {/* Typing Indicator */}
+        {!isUser &&  displayedContent?.length !== content.length &&isTyping && (
+          <div className="flex items-center gap-1 mt-2">
+            <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce"></div>
+            <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+            <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+          </div>
         )}
       </div>
 
