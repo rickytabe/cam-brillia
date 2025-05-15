@@ -84,9 +84,9 @@ export default function App() {
         input,
         fileHandling.attachments,
         selectedModel,
-        webSearchEnabled
+        messages
       );
-
+    console.log('Messages:', messages);
       setMessages((prev) => [
         ...prev,
         {

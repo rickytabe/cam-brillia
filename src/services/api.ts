@@ -1,11 +1,13 @@
 import { GoogleGenAI, Modality } from "@google/genai";
 import { API_KEY } from "../constants";
+import type { Message } from "../types";
 //import type { Message } from "../types";
 
 export const generateResponse = async (
   prompt: string,
   attachments: File[],
-  selectedModel: string
+  selectedModel: string,
+  messages: Message[],
 ) => {
   try {
     const ai = new GoogleGenAI({ apiKey: API_KEY });
@@ -27,19 +29,23 @@ export const generateResponse = async (
       }
       return { text: `[Attachment: ${file.name}]` };
     }));
+    
+     // Format the conversation history
+    const formattedHistory = messages.map(msg => ({
+      role: msg.isUser ? "user" : "model", // Use "model" instead of "assistant"
+      parts: [{ text: msg.content }]
+    }));
 
+    // Add the current prompt and attachments
+    formattedHistory.push({
+      role: "user",
+      parts: [{ text: prompt }, ...parts.map(part => part.inlineData ? { text: `[Inline Data: ${part.inlineData.mimeType}]` } : part)]
+    });
+    
     const response = await ai.models.generateContent({
       model: selectedModel,
-      contents: [
-        { 
-          role: "user",
-          parts: [
-            { text: prompt },
-            ...parts
-          ]
-        }
-      ],
-     config: {
+      contents: formattedHistory,
+      config: {
         responseModalities: selectedModel.toLowerCase().includes("image")
           ? [Modality.TEXT, Modality.IMAGE]
           : [Modality.TEXT],
