@@ -1,22 +1,43 @@
+
 export type Message = {
   content: string;
   isUser: boolean;
-  attachments?: File[];
+  attachments?: Array<{
+    name: string;
+    type: string;
+    data?: string; // Base64 data without prefix
+  }>;
   displayedContent?: string;
-  isTyping?: boolean;
-  images? : string[];
+  images?: string[];
 };
 
-export interface GeminiImageResponse {
+export type GeminiResponse = {
   candidates: Array<{
     content: {
       parts: Array<{
         text?: string;
-        image?: {
-          bytes: string; // Base64-encoded image
+        inlineData?: {
           mimeType: string;
+          data: string;
         };
+      }>;
+    };
+    groundingMetadata?: {
+      webSearchQueries?: string[];
+      searchResults?: Array<{
+        url: string;
+        title: string;
+        snippet: string;
       }>;
     };
   }>;
 };
+
+
+export interface ChatSession {
+  id: string;
+  name: string;
+  messages: Message[];
+  selectedModel:string;
+  createdAt: number; // Timestamp for sorting or display
+}

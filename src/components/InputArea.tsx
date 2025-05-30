@@ -1,3 +1,5 @@
+import { useRef, useEffect } from "react";
+
 export function InputArea({
   input,
   setInput,
@@ -9,6 +11,7 @@ export function InputArea({
   setWebSearchEnabled,
   fileInputRef,
   handleFiles,
+  onStopGeneration,
 }: {
   input: string;
   setInput: (value: string) => void;
@@ -20,13 +23,31 @@ export function InputArea({
   setWebSearchEnabled: (value: boolean) => void;
   fileInputRef: React.RefObject<HTMLInputElement | null>;
   handleFiles: (files: FileList) => void;
+  onStopGeneration: () => void;
 }) {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-resize textarea
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+
+      // Limit maximum height to 200px (adjust as needed)
+      if (textareaRef.current.scrollHeight > 200) {
+        textareaRef.current.style.overflowY = "auto";
+      } else {
+        textareaRef.current.style.overflowY = "hidden";
+      }
+    }
+  }, [input]);
+
   return (
-    <div className="fixed bottom-0 w-full bg-gray-800 border-t border-gray-700">
+    <div className="fixed bottom-0 w-full md:w-3/4 lg:w-1/2 md:mb-2 bg-gray-800 border-t border-gray-700 rounded-4xl">
       <div className="max-w-4xl mx-auto p-4">
-        <div className="flex items-center gap-4 mb-4">
+        <div className="flex items-center gap-4 mb-1">
           <button
-            className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
+            className={`flex items-center gap-2 px-3 py-2 rounded-4xl ${
               webSearchEnabled ? "bg-blue-500" : "bg-gray-700"
             }`}
             onClick={() => setWebSearchEnabled(!webSearchEnabled)}
@@ -116,42 +137,63 @@ export function InputArea({
 
         <div className="flex gap-4 items-center">
           <textarea
+            ref={textareaRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-            className="flex-1 p-3 bg-gray-700 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="flex-1 p-3 bg-transparent rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-transparent custom-scrollbar"
             placeholder="Type your message..."
             rows={1}
+            style={{
+              minHeight: "44px",
+              maxHeight: "200px",
+              transition: "height 0.2s ease-out",
+            }}
           />
 
-          <button
-            onClick={handleSend}
-            disabled={loading}
-            className="p-3 bg-blue-500 rounded-lg hover:bg-blue-600 disabled:bg-gray-600 transition-colors"
-          >
-            {loading ? (
-              <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  className="opacity-25"
-                />
-                <path
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  className="opacity-75"
-                />
-              </svg>
-            ) : (
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
-              </svg>
+           <div className="flex items-center">
+            <button
+              onClick={handleSend}
+              disabled={loading || (!input.trim() && attachments.length === 0)}
+              className="p-3 bg-blue-500 rounded-4xl hover:bg-blue-600 disabled:bg-gray-600 transition-colors flex items-center justify-center"
+              style={{ width: '44px', height: '44px' }} 
+            >
+              {loading ? (
+                <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    className="opacity-25"
+                  />
+                  <path
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    className="opacity-75"
+                  />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                </svg>
+              )}
+            </button>
+            {loading && (
+              <button
+                onClick={onStopGeneration}
+                className="p-3 bg-red-500 rounded-4xl hover:bg-red-600 transition-colors ml-2 flex items-center justify-center"
+                title="Stop Generation"
+                style={{ width: '44px', height: '44px' }} 
+              >
+                <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                  <rect x="6" y="6" width="12" height="12" />
+                </svg>
+              </button>
             )}
-          </button>
+          </div>
         </div>
       </div>
     </div>

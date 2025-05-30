@@ -14,7 +14,7 @@ export const useFileHandling = () => {
   const handleFiles = (files: FileList) => {
     const validFiles = Array.from(files).filter(file => {
     // Increase size limit for PDFs
-    const maxSize = file.type === 'application/pdf' ? 10 * 1024 * 1024 : 5 * 1024 * 1024;
+    const maxSize = file.type === 'application/pdf' ? 20 * 1024 * 1024 : 5 * 1024 * 1024;
     
     if (file.size > maxSize) {
       alert(`File ${file.name} exceeds ${maxSize/1024/1024}MB limit`);

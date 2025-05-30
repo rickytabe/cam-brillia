@@ -6,5 +6,8 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   assetsInclude: ['**/*.worker.mjs'],
-  build: {}
+  build: {},
+  server: {
+    allowedHosts: ['prototype-mileage-lifetime-length.trycloudflare.com']
+  }
 })
