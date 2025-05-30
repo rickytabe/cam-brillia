@@ -151,7 +151,7 @@ export default function App() {
         fileHandling.attachments,
         selectedModel,
         messages,
-        abortControllerRef.current.signal
+        //abortControllerRef.current.signal
       );
 
       setMessages((prev) => [
