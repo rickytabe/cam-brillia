@@ -5,7 +5,6 @@ import {
   FiSettings,
   FiLogOut,
   FiChevronLeft,
-  FiChevronRight,
   FiChevronDown,
 } from "react-icons/fi";
 import { FaUserCircle } from "react-icons/fa";
@@ -25,7 +24,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
   currentSessionId,
   onSwitchSession,
   onNewSession,
-  selectedModel = "Default",
+  //selectedModel = "Default",
   isCollapsed,
   onToggleCollapse,
 }) => {

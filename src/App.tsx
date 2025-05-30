@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useScrollToBottom, useFileHandling } from "./hooks";
+import {useFileHandling } from "./hooks";
 import { MessageComponent } from "./components/Message";
 import { InputArea } from "./components/InputArea";
 import { generateResponse } from "./services/api";

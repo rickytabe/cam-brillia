@@ -18,7 +18,7 @@ export const generateResponse = async (
   attachments: File[],
   selectedModel: string,
   messages: Message[],
-  signal: AbortSignal,
+  //signal: AbortSignal,
 ) => {
   try {
     const ai = new GoogleGenAI({ apiKey: API_KEY });
